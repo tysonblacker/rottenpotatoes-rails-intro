@@ -49,6 +49,10 @@ group :development, :test do
   gem 'autotest'
 end
 
+group :development do
+      gem 'rerun'
+end
+
 group :production do
   gem 'pg' # for Heroku deployment
   gem 'rails_12factor'
