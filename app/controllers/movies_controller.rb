@@ -12,6 +12,8 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.uniq.pluck(:rating)
+    #byebug
+    puts session[:sort_type]
     if session[:ratings_filter].nil?
       @selected_ratings = @all_ratings
     else
@@ -23,19 +25,28 @@ class MoviesController < ApplicationController
       session[:ratings_filter] =  @selected_ratings
     end
     
-    session[:sort] = params[:sort] || session[:sort]
     
+    if not params[:sort].blank?
+      @sort_type = params[:sort]
+    elsif not session[:sort_type].blank?
+      @sort_type = session[:sort_type]
+    else
+      @sort_type = 'default'
+    end
     
+    session[:sort_type] = @sort_type
     
-    case session[:sort]
-    when 'title'
+    #byebug
+    case @sort_type
+    when "title"
       @movies = Movie.where(rating: @selected_ratings).order(:title)
       @title_class = '.hilite'
-    when 'release_date'
+    when "release_date"
       @movies = Movie.where(rating: @selected_ratings).order(:release_date)
       @release_date_class = '.hilite'
     else
       @movies = Movie.where(rating: @selected_ratings)
+      
     end 
    
   end

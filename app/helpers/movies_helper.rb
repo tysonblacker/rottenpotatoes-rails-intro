@@ -5,7 +5,7 @@ module MoviesHelper
   end
   
   def get_header_hilite(column)
-    if params['sort'] == column
+    if session[:sort_type] == column
       "hilite"
     else
       ""
