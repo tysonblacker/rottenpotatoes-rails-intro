@@ -11,16 +11,32 @@ class MoviesController < ApplicationController
   end
 
   def index
-   case params[:sort]
-   when 'title'
-     @movies = Movie.all.order(:title)
-     @title_class = '.hilite'
-   when 'release_date'
-     @movies = Movie.all.order(:release_date)
-     @release_date_class = '.hilite'
-   else
-    @movies = Movie.all
-   end 
+    @all_ratings = Movie.uniq.pluck(:rating)
+    if session[:ratings_filter].nil?
+      @selected_ratings = @all_ratings
+    else
+      @selected_ratings = session[:ratings_filter]
+    end
+    
+    unless params[:ratings].blank?
+      @selected_ratings = params[:ratings].keys
+      session[:ratings_filter] =  @selected_ratings
+    end
+    
+    session[:sort] = params[:sort] || session[:sort]
+    
+    
+    
+    case session[:sort]
+    when 'title'
+      @movies = Movie.where(rating: @selected_ratings).order(:title)
+      @title_class = '.hilite'
+    when 'release_date'
+      @movies = Movie.where(rating: @selected_ratings).order(:release_date)
+      @release_date_class = '.hilite'
+    else
+      @movies = Movie.where(rating: @selected_ratings)
+    end 
    
   end
 
