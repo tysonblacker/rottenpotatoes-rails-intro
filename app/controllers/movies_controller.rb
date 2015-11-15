@@ -13,18 +13,20 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.uniq.pluck(:rating)
     #byebug
-    puts session[:sort_type]
+    
     if session[:ratings_filter].nil?
       @selected_ratings = @all_ratings
     else
       @selected_ratings = session[:ratings_filter]
+      
     end
     
     unless params[:ratings].blank?
-      @selected_ratings = params[:ratings].keys
+      @selected_ratings = params[:ratings]
       session[:ratings_filter] =  @selected_ratings
     end
     
+    #params[:ratings] = session[:ratings_filter]
     
     if not params[:sort].blank?
       @sort_type = params[:sort]
@@ -35,17 +37,18 @@ class MoviesController < ApplicationController
     end
     
     session[:sort_type] = @sort_type
+    params[:sort] = @sort 
     
     #byebug
     case @sort_type
     when "title"
-      @movies = Movie.where(rating: @selected_ratings).order(:title)
+      @movies = Movie.where(rating: @selected_ratings.keys).order(:title)
       @title_class = '.hilite'
     when "release_date"
-      @movies = Movie.where(rating: @selected_ratings).order(:release_date)
+      @movies = Movie.where(rating: @selected_ratings.keys).order(:release_date)
       @release_date_class = '.hilite'
     else
-      @movies = Movie.where(rating: @selected_ratings)
+      @movies = Movie.where(rating: @selected_ratings.keys)
       
     end 
    
